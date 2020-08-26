@@ -5,14 +5,14 @@ from src.config.appConfig import getConfig
 from src.fetchers.significanceViolationFetcher import fetchIegcViolationData
 from src.repos.insertViolationData import IegcViolationSummaryRepo
 
-#%%
+# %%
 appConfig = getConfig()
-print(appConfig)
+# print(appConfig)
 # create outages raw data between start and end dates
 systemConstraintFolderPath = appConfig['violationDataFolder']
 appDbConnStr = appConfig['appDbConStr']
 
-iegcViolationData= fetchIegcViolationData(systemConstraintFolderPath)
+iegcViolationData = fetchIegcViolationData(systemConstraintFolderPath)
 
 # get the instance of IEGC violation repository
 iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
