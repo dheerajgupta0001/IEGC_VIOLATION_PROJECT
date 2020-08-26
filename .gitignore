@@ -3,6 +3,7 @@ input_data/
 __pycache__
 *.py[cod]
 *$py.class
+~$*.xlsx
 
 # Distribution / packaging 
 .Python build/ 
