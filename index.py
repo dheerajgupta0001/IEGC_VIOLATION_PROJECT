@@ -22,3 +22,5 @@ if isInsSuccess:
     print("IEGC violation data insertion successful")
 else:
     print("IEGC violation data insertion UNsuccessful")
+
+# %%

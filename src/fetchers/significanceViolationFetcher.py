@@ -3,6 +3,7 @@ from src.typeDefs.iegcViolationSummary import IViolationMessageSummary
 from typing import List
 import os
 import pandas as pd
+import math
 
 
 def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationMessageSummary]:
@@ -13,10 +14,12 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
         List[IPairAngleSummary]: list of transmission records fetched from the excel data
     """
     # sample excel filename - Transmission Constraints.xlsx
+    #Significant Violation of IEGC
     #fileDateStr = dt.datetime.strftime(targetDt, '%d_%m_%Y')
-    targetFilename = 'Significant Violation of IEGC.xlsx'
+    targetFilename = 'Violation_Log till 26.08.2020-1.xlsx'
+    #targetFilename = 'Significant Violation of IEGC.xlsx'
     targetFilePath = os.path.join(iegcViolationDataFolderPath, targetFilename)
-    #print("transmission file :{0}".format(targetFilePath))
+    print("transmission file :{0}".format(targetFilePath))
 
     # check if excel file is present
     if not os.path.isfile(targetFilePath):
@@ -60,11 +63,9 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
                     df2 = dfSubset[['Message no.', 'Date', 'Entity4',
                                     'Schedule4', 'Drawal4', 'Deviation4']]
                     df2.rename(columns={'Entity4': 'Entity1'}, inplace=True)
-                    df2.rename(
-                        columns={'Schedule4': 'Schedule1'}, inplace=True)
+                    df2.rename(columns={'Schedule4': 'Schedule1'}, inplace=True)
                     df2.rename(columns={'Drawal4': 'Drawal1'}, inplace=True)
-                    df2.rename(
-                        columns={'Deviation4': 'Deviation1'}, inplace=True)
+                    df2.rename(columns={'Deviation4': 'Deviation1'}, inplace=True)
                     df3 = df3.append(df2, ignore_index=True,
                                      verify_integrity=False, sort=None)
                     # print(df1)
@@ -78,15 +79,21 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
     # print(data)
     data_final = data.drop_duplicates(
         subset=['Message no.', 'Date', 'Entity1'], keep='last', ignore_index=True)
-    # print(data_final)
+    #print(data_final['Schedule1'])
     # print(data_final.columns)
     # test done
 
     # convert nan to None
     data_final = data_final.where(pd.notnull(data_final), None)
+    print(data_final['Schedule1'])
 
     # convert dataframe to list of dictionaries
     iegcViolationRecords = data_final.to_dict('records')
-    # print(iegcViolationRecords.columns)
+    '''count =0
+    for i in range(len(iegcViolationRecords)): 
+        if not int(iegcViolationRecords[i]['Schedule1']):
+            count+=1'''
+    #print(iegcViolationRecords)
+    print(count)
 
     return iegcViolationRecords
