@@ -4,6 +4,7 @@ from typing import List
 import os
 import pandas as pd
 import math
+import glob
 
 
 def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationMessageSummary]:
@@ -13,12 +14,13 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
     Returns:
         List[IPairAngleSummary]: list of transmission records fetched from the excel data
     """
-    # sample excel filename - Transmission Constraints.xlsx
-    #Significant Violation of IEGC
-    #fileDateStr = dt.datetime.strftime(targetDt, '%d_%m_%Y')
-    targetFilename = 'Violation_Log till 26.08.2020-1.xlsx'
+    # excel filename must start with - Violation_Log
+
+    for name in glob.glob('{0}\Violation_Log*.xlsx'.format(iegcViolationDataFolderPath)):
+        targetFilePath = name
+    '''targetFilename = 'Violation_Log till 26.08.2020.xlsx'
     #targetFilename = 'Significant Violation of IEGC.xlsx'
-    targetFilePath = os.path.join(iegcViolationDataFolderPath, targetFilename)
+    targetFilePath = os.path.join(iegcViolationDataFolderPath, targetFilename)'''
     print("transmission file :{0}".format(targetFilePath))
 
     # check if excel file is present
@@ -85,15 +87,13 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
 
     # convert nan to None
     data_final = data_final.where(pd.notnull(data_final), None)
-    print(data_final['Schedule1'])
 
     # convert dataframe to list of dictionaries
     iegcViolationRecords = data_final.to_dict('records')
-    '''count =0
-    for i in range(len(iegcViolationRecords)): 
-        if not int(iegcViolationRecords[i]['Schedule1']):
-            count+=1'''
-    #print(iegcViolationRecords)
-    print(count)
 
-    return iegcViolationRecords
+    templist=[]
+    for i in range(len(iegcViolationRecords)): 
+        if type(iegcViolationRecords[i]['Schedule1']) is float or type(iegcViolationRecords[i]['Schedule1']) is int:
+            templist.append(iegcViolationRecords[i])
+
+    return templist

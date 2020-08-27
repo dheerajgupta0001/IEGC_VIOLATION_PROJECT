@@ -16,6 +16,7 @@ iegcViolationData = fetchIegcViolationData(systemConstraintFolderPath)
 
 # get the instance of IEGC violation repository
 iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
+#%%
 # pushing Transmission constraints Data to database
 isInsSuccess = iegcDataRepo.pushTransmissionRecord(iegcViolationData)
 if isInsSuccess:
