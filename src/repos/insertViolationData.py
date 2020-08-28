@@ -21,7 +21,7 @@ class IegcViolationSummaryRepo():
         self.localConStr = dbConStr
         # print(dbConStr)
 
-    def pushTransmissionRecord(self, iegcDataRecords: List[IViolationMessageSummary]) -> bool:
+    def pushViolationMessages(self, iegcDataRecords: List[IViolationMessageSummary]) -> bool:
         """inserts iegc violation data into the app db
         Args:
             iegcDataRecords (List[IViolationMessageSummary]): iegc violation data to be inserted

@@ -18,10 +18,8 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
 
     for name in glob.glob('{0}\Violation_Log*.xlsx'.format(iegcViolationDataFolderPath)):
         targetFilePath = name
-    '''targetFilename = 'Violation_Log till 26.08.2020.xlsx'
-    #targetFilename = 'Significant Violation of IEGC.xlsx'
-    targetFilePath = os.path.join(iegcViolationDataFolderPath, targetFilename)'''
-    print("transmission file :{0}".format(targetFilePath))
+    
+    print("processing file :{0}".format(targetFilePath))
 
     # check if excel file is present
     if not os.path.isfile(targetFilePath):
@@ -93,7 +91,7 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
 
     templist=[]
     for i in range(len(iegcViolationRecords)): 
-        if type(iegcViolationRecords[i]['Schedule1']) is float or type(iegcViolationRecords[i]['Schedule1']) is int:
+        if isinstance(iegcViolationRecords[i]['Schedule1'], float) or isinstance(iegcViolationRecords[i]['Schedule1'], int):
             templist.append(iegcViolationRecords[i])
 
     return templist

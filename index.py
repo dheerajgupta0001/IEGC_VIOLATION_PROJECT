@@ -18,7 +18,7 @@ iegcViolationData = fetchIegcViolationData(systemConstraintFolderPath)
 iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
 #%%
 # pushing Transmission constraints Data to database
-isInsSuccess = iegcDataRepo.pushTransmissionRecord(iegcViolationData)
+isInsSuccess = iegcDataRepo.pushViolationMessages(iegcViolationData)
 if isInsSuccess:
     print("IEGC violation data insertion successful")
 else:
