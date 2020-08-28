@@ -1,5 +1,6 @@
 config.xlsx
 input_data/
+project_env/
 __pycache__
 *.py[cod]
 *$py.class
