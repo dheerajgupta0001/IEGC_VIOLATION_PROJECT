@@ -9,10 +9,10 @@ from src.repos.insertViolationData import IegcViolationSummaryRepo
 appConfig = getConfig()
 # print(appConfig)
 # create outages raw data between start and end dates
-systemConstraintFolderPath = appConfig['violationDataFolder']
+iegcMessageFolderPath = appConfig['violationDataFolder']
 appDbConnStr = appConfig['appDbConStr']
 
-iegcViolationData = fetchIegcViolationData(systemConstraintFolderPath)
+iegcViolationData = fetchIegcViolationData(iegcMessageFolderPath)
 
 # get the instance of IEGC violation repository
 iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
