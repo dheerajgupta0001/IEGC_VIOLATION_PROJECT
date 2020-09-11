@@ -7,24 +7,35 @@ import math
 import glob
 
 
-def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationMessageSummary]:
-    """fetched transmission constraint data for a quarter
-    Args:
-        targetDt (dt.datetime): date for which quarter is to be extracted
-    Returns:
-        List[IPairAngleSummary]: list of transmission records fetched from the excel data
-    """
-    # excel filename must start with - Violation_Log
+def getIegcViolationMsgsFilePath(iegcViolationDataFolderPath: str) -> str:
+    """get the file path of iegc violation messages excel file from an input folder
 
+    Args:
+        iegcViolationDataFolderPath (str): path of folder to search for
+
+    Returns:
+        str: file path of desired excel file that contains IEGC violation messages
+    """
+    targetFilePath = ''
+
+    # excel filename must start with - Violation_Log
     for name in glob.glob('{0}\Violation_Log*.xlsx'.format(iegcViolationDataFolderPath)):
         targetFilePath = name
-    
-    print("processing file :{0}".format(targetFilePath))
 
-    # check if excel file is present
-    if not os.path.isfile(targetFilePath):
+    return targetFilePath
+
+
+def fetchIegcViolationData(targetFilePath) -> List[IViolationMessageSummary]:
+    """fetches IEGC violation messages data from an excel file
+    Args:
+        targetFilePath (str): path of excel file to be processed
+    Returns:
+        List[IPairAngleSummary]: list of IEGC violation messages fetched from the excel data
+    """
+
+    if isinstance(targetFilePath, str) and not(targetFilePath == ''):
         return []
-
+    
     # read excel file
     df = pd.read_excel(targetFilePath)
 
@@ -63,9 +74,11 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
                     df2 = dfSubset[['Message no.', 'Date', 'Entity4',
                                     'Schedule4', 'Drawal4', 'Deviation4']]
                     df2.rename(columns={'Entity4': 'Entity1'}, inplace=True)
-                    df2.rename(columns={'Schedule4': 'Schedule1'}, inplace=True)
+                    df2.rename(
+                        columns={'Schedule4': 'Schedule1'}, inplace=True)
                     df2.rename(columns={'Drawal4': 'Drawal1'}, inplace=True)
-                    df2.rename(columns={'Deviation4': 'Deviation1'}, inplace=True)
+                    df2.rename(
+                        columns={'Deviation4': 'Deviation1'}, inplace=True)
                     df3 = df3.append(df2, ignore_index=True,
                                      verify_integrity=False, sort=None)
                     # print(df1)
@@ -79,7 +92,7 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
     # print(data)
     data_final = data.drop_duplicates(
         subset=['Message no.', 'Date', 'Entity1'], keep='last', ignore_index=True)
-    #print(data_final['Schedule1'])
+    # print(data_final['Schedule1'])
     # print(data_final.columns)
     # test done
 
@@ -89,8 +102,8 @@ def fetchIegcViolationData(iegcViolationDataFolderPath: str) -> List[IViolationM
     # convert dataframe to list of dictionaries
     iegcViolationRecords = data_final.to_dict('records')
 
-    templist=[]
-    for i in range(len(iegcViolationRecords)): 
+    templist = []
+    for i in range(len(iegcViolationRecords)):
         if isinstance(iegcViolationRecords[i]['Schedule1'], float) or isinstance(iegcViolationRecords[i]['Schedule1'], int):
             templist.append(iegcViolationRecords[i])
 
