@@ -28,7 +28,7 @@ def getIegcViolationMsgsFilePath(iegcViolationDataFolderPath: str) -> str:
 def fetchIegcViolationData(targetFilePath) -> List[IViolationMessageSummary]:
     """fetches IEGC violation messages data from an excel file
     Args:
-        targetFilePath (str): path of excel file to be processed
+        targetFilePath (str): path of excel file to be processed or the file itself
     Returns:
         List[IPairAngleSummary]: list of IEGC violation messages fetched from the excel data
     """

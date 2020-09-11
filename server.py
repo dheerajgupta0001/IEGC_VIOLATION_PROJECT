@@ -26,16 +26,15 @@ def hello():
 
 @app.route('/iegcViolMsgs', methods=['POST'])
 def createIegcViolationMsgs():
-    # get start and end dates from post request body
-    reqData = request.get_json()
-    if not ('messages' in reqData):
-        return jsonify({'message': 'key by name messages is not present in request object'}), 400
     try:
-        violMsgs: List[IViolationMessageSummary] = reqData['messages']
+        reqFile = request.files.get('inpFile')
+        iegcViolationData = fetchIegcViolationData(reqFile)
+
         # get the instance of IEGC violation repository
         iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
         # pushing IEGC violation messages to database
-        isInsSuccess = iegcDataRepo.pushViolationMessages(violMsgs)
+        isInsSuccess = iegcDataRepo.pushViolationMessages(iegcViolationData)
+
         if isInsSuccess:
             return jsonify({'message': 'IEGC Violation messages insertion successful!!!'})
     except Exception as ex:
