@@ -33,7 +33,7 @@ def fetchIegcViolationData(targetFilePath) -> List[IViolationMessageSummary]:
         List[IPairAngleSummary]: list of IEGC violation messages fetched from the excel data
     """
 
-    if isinstance(targetFilePath, str) and not(targetFilePath == ''):
+    if isinstance(targetFilePath, str) and (targetFilePath == ''):
         return []
     
     # read excel file
