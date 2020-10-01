@@ -6,6 +6,7 @@ from src.config.appConfig import getConfig
 from src.fetchers.significanceViolationFetcher import fetchIegcViolationData, getIegcViolationMsgsFilePath
 from src.repos.insertViolationData import IegcViolationSummaryRepo
 from src.typeDefs.iegcViolationSummary import IViolationMessageSummary
+from src.dataFetcher.iegcViolMsgsFetcher import IegcViolMsgsFetcher
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -37,6 +38,27 @@ def createIegcViolationMsgs():
 
         if isInsSuccess:
             return jsonify({'message': 'IEGC Violation messages insertion successful!!!'})
+    except Exception as ex:
+        return jsonify({'message': 'some error occured...'}), 400
+    return jsonify({'message': 'some error occured...'}), 400
+
+
+@app.route('/fetchIegcViolMsgs', methods=['POST'])
+def fetchIegcViolMsgs():
+    # get start and end dates from post request body
+    reqData = request.get_json()
+    try:
+        startDate = dt.datetime.strptime(reqData['startDate'], '%Y-%m-%d')
+        endDate = dt.datetime.strptime(reqData['endDate'], '%Y-%m-%d')
+
+        # get iegc violation messages
+        violMsgsFetcher = IegcViolMsgsFetcher(appDbConnStr)
+        violMsgs: List[IIegcViolMsg] = violMsgsFetcher.fetchIegcViolMsgs(
+            startDate, endDate)
+        print(type(violMsgs))
+
+        if violMsgs:
+            return jsonify({'message': violMsgs, 'startDate': startDate, 'endDate': endDate})
     except Exception as ex:
         return jsonify({'message': 'some error occured...'}), 400
     return jsonify({'message': 'some error occured...'}), 400
