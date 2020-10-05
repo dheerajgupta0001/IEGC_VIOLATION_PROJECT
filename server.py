@@ -55,7 +55,6 @@ def fetchIegcViolMsgs():
         violMsgsFetcher = IegcViolMsgsFetcher(appDbConnStr)
         violMsgs: List[IIegcViolMsg] = violMsgsFetcher.fetchIegcViolMsgs(
             startDate, endDate)
-        print(type(violMsgs))
 
         if violMsgs:
             return jsonify({'message': violMsgs, 'startDate': startDate, 'endDate': endDate})
