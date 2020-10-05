@@ -30,7 +30,7 @@ def fetchIegcViolationData(targetFilePath) -> List[IViolationMessageSummary]:
     Args:
         targetFilePath (str): path of excel file to be processed or the file itself
     Returns:
-        List[IPairAngleSummary]: list of IEGC violation messages fetched from the excel data
+        List[IViolationMessageSummary]: list of IEGC violation messages fetched from the excel data
     """
 
     if isinstance(targetFilePath, str) and (targetFilePath == ''):
@@ -83,18 +83,14 @@ def fetchIegcViolationData(targetFilePath) -> List[IViolationMessageSummary]:
                                      verify_integrity=False, sort=None)
                     # print(df1)
         else:
-            #print("value not present")
             df3 = df1
             # print(df3)
 
         data = data.append(df3, ignore_index=True,
                            verify_integrity=False, sort=None)
-    # print(data)
+    data.rename(columns={'Message no.': 'Message'}, inplace=True)
     data_final = data.drop_duplicates(
-        subset=['Message no.', 'Date', 'Entity1'], keep='last', ignore_index=True)
-    # print(data_final['Schedule1'])
-    # print(data_final.columns)
-    # test done
+        subset=['Message', 'Date', 'Entity1'], keep='last', ignore_index=True)
 
     # convert nan to None
     data_final = data_final.where(pd.notnull(data_final), None)

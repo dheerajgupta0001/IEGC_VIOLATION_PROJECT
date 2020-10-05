@@ -2,11 +2,11 @@ import cx_Oracle
 import pandas as pd
 import datetime as dt
 from typing import List, Tuple
-from src.typeDefs.iegcViolationSummary import IViolationMessageSummary
+from src.typeDefs.iegcViolationFetcherSummary import IViolationMessageFetcherSummary
 
 
 class IegcViolMsgsFetcher():
-    """This class fetches iegc violation messages for weekly report
+    """This class fetches iegc violation messages for UI
     """
 
     def __init__(self, con_string: str):
@@ -17,13 +17,13 @@ class IegcViolMsgsFetcher():
 
         self.connString = con_string
 
-    def fetchIegcViolMsgs(self, startDate: dt.datetime, endDate: dt.datetime) -> List[IViolationMessageSummary]:
+    def fetchIegcViolMsgs(self, startDate: dt.datetime, endDate: dt.datetime) -> List[IViolationMessageFetcherSummary]:
         """fetch derived frequency from mis_warehouse db 
         Args:
             startDate (dt.datetime): start date
             endDate (dt.datetime): end date
         Returns:
-            List[IViolationMessageSummary]: List of IEGC violation messages for weekly report
+            List[IViolationMessageFetcherSummary]: List of IEGC violation messages for UI
         """
 
         try:
@@ -48,9 +48,9 @@ class IegcViolMsgsFetcher():
             connection.close()
             print('closed db connection after iegc violation messages fetching')
 
-        violMsgList: List[IViolationMessageSummary] = []
+        violMsgList: List[IViolationMessageFetcherSummary] = []
         for i in df.index:
-            violMsg: IViolationMessageSummary = {
+            violMsg: IViolationMessageFetcherSummary = {
                 'msgId': df['MESSAGE'][i],
                 'date': dt.datetime.strftime(df['DATE_TIME'][i], "%d-%m-%Y"),
                 'entity': df['ENTITY'][i],

@@ -36,7 +36,7 @@ class IegcViolationSummaryRepo():
             return isInsertSuccess
         try:
             # keyNames names of the raw data
-            keyNames = ['Message no.', 'Date', 'Entity1',
+            keyNames = ['Message', 'Date', 'Entity1',
                         'Schedule1', 'Drawal1', 'Deviation1']
             colNames = ['MESSAGE', 'DATE_TIME', 'ENTITY',
                         'SCHEDULE', 'DRAWAL', 'DEVIATION']

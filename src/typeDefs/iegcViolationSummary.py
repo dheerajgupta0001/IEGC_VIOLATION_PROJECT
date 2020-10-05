@@ -3,8 +3,9 @@ import datetime as dt
 
 
 class IViolationMessageSummary(TypedDict):
-    StartDate: dt.datetime
-    EndDate: dt.datetime
-    corridor: str
-    seasonAntecedent: str
-    description: str
+    Message: str
+    Date: dt.datetime
+    Entity1: str
+    Schedule1: float
+    Drawal1: float
+    Deviation1: float
