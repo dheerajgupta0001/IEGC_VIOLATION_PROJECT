@@ -57,7 +57,7 @@ def fetchIegcViolMsgs():
             startDate, endDate)
 
         if violMsgs:
-            return jsonify({'message': violMsgs, 'startDate': startDate, 'endDate': endDate})
+            return jsonify({'message': 'Success!!!', 'data': violMsgs, 'startDate': startDate, 'endDate': endDate})
     except Exception as ex:
         return jsonify({'message': 'some error occured...'}), 400
     return jsonify({'message': 'some error occured...'}), 400
