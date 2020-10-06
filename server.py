@@ -43,14 +43,18 @@ def createIegcViolationMsgs():
     return jsonify({'message': 'some error occured...'}), 400
 
 
-@app.route('/fetchIegcViolMsgs', methods=['POST'])
+@app.route('/fetchIegcViolMsgs', methods=['GET'])
 def fetchIegcViolMsgs():
     # get start and end dates from post request body
-    reqData = request.get_json()
     try:
-        startDate = dt.datetime.strptime(reqData['startDate'], '%Y-%m-%d')
-        endDate = dt.datetime.strptime(reqData['endDate'], '%Y-%m-%d')
+        startDateStr = request.args.get('startDate', None, type=str)
+        endDateStr = request.args.get('endDate', None, type=str)
+        startDate = dt.datetime.strptime(startDateStr, '%Y-%m-%d')
+        endDate = dt.datetime.strptime(endDateStr, '%Y-%m-%d')
+    except Exception as ex:
+        return jsonify({'message': 'Unable to parse start and end dates of this request body'}), 400
 
+    try:
         # get iegc violation messages
         violMsgsFetcher = IegcViolMsgsFetcher(appDbConnStr)
         violMsgs: List[IIegcViolMsg] = violMsgsFetcher.fetchIegcViolMsgs(
@@ -58,9 +62,10 @@ def fetchIegcViolMsgs():
 
         if violMsgs:
             return jsonify({'message': 'Success!!!', 'data': violMsgs, 'startDate': startDate, 'endDate': endDate})
+        else:
+            return jsonify({'message': 'IEGC violatiom message fetch unsuccessfull'}), 500
     except Exception as ex:
         return jsonify({'message': 'some error occured...'}), 400
-    return jsonify({'message': 'some error occured...'}), 400
 
 
 if __name__ == '__main__':
