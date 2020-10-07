@@ -52,7 +52,7 @@ class IegcViolMsgsFetcher():
         for i in df.index:
             violMsg: IViolationMessageFetcherSummary = {
                 'msgId': df['MESSAGE'][i],
-                'date': dt.datetime.strftime(df['DATE_TIME'][i], "%d-%m-%Y"),
+                'date': dt.datetime.strftime(df['DATE_TIME'][i], "%Y-%m-%d"),
                 'entity': df['ENTITY'][i],
                 'schedule': int(round(df['SCHEDULE'][i])),
                 'drawal': int(round(df['DRAWAL'][i])),
