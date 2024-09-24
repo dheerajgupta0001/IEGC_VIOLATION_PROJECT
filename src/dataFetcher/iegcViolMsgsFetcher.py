@@ -1,9 +1,11 @@
 import cx_Oracle
+import psycopg2
 import pandas as pd
 import datetime as dt
 from typing import List, Tuple
 from src.typeDefs.iegcViolationFetcherSummary import IViolationMessageFetcherSummary
-
+from src.config.appConfig import getAppConfig
+from psycopg2 import extras
 
 class IegcViolMsgsFetcher():
     """This class fetches iegc violation messages for UI
@@ -25,38 +27,57 @@ class IegcViolMsgsFetcher():
         Returns:
             List[IViolationMessageFetcherSummary]: List of IEGC violation messages for UI
         """
+        dbConfig = getAppConfig()
+        dbConn = None
+        dbCur = None
 
         try:
-            connection = cx_Oracle.connect(self.connString)
-            cursor = connection.cursor()
+            dbConn = psycopg2.connect(host=dbConfig['db_host'], dbname=dbConfig['db_name'],
+                                      user=dbConfig['db_username'], password=dbConfig['db_password'])
+            dbCur = dbConn.cursor()
 
-            sql_fetch = """ SELECT * FROM mis_warehouse.IEGC_VIOLATION_MESSAGE_DATA 
-                        where (date_time BETWEEN TO_DATE(:col1, 'YYYY-MM-DD') and TO_DATE(:col2, 'YYYY-MM-DD'))
-                        and not(entity='nan') 
-                        order by date_time, message
-                        """
-            cursor.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD' ")
-            df = pd.read_sql(sql_fetch, params={
-                             'col1': startDate, 'col2': endDate}, con=connection)
+            # sqlTxt = 'SELECT t1."msgId", t1."time_stamp" as date, t2."name" as entity, t2.schedule, t2.drawal FROM sch_drwl_viol_msgs t1 LEFT JOIN sch_drwl_viol_rows t2 ON t1."Id"  = t2."msgLogId" where t1.time_stamp BETWEEN %(col1)s AND %(col2)s order by date, t1."msgId"'
+            params = {'col1': startDate, 'col2': endDate}
+            sqlTxt = """
+                    SELECT 
+                    t1."msgId", 
+                    t1."time_stamp" AS date, 
+                    t2."name" AS entity, 
+                    t2.schedule, 
+                    t2.drawal 
+                    FROM 
+                    sch_drwl_viol_msgs t1 
+                    LEFT JOIN sch_drwl_viol_rows t2 ON t1."Id" = t2."msgLogId" 
+                    WHERE 
+                    t1.time_stamp BETWEEN %(col1)s AND %(col2)s 
+                    ORDER BY 
+                    date, 
+                    t1."msgId"
+                """
 
-        except:
+            df = pd.read_sql(sqlTxt, params=params, con=dbConn)
+            # df = pd.read_sql(sqlTxt, params=[startDate, endDate], con=dbConn)
+            # print(df)
+
+        except Exception as ex:
+            print(ex)
             print('Error while fetching data from db')
         finally:
             # closing database cursor and connection
-            if cursor is not None:
-                cursor.close()
-            connection.close()
+            if dbCur is not None:
+                dbCur.close()
+            dbConn.close()
             print('closed db connection after iegc violation messages fetching')
 
         violMsgList: List[IViolationMessageFetcherSummary] = []
         for i in df.index:
             violMsg: IViolationMessageFetcherSummary = {
-                'msgId': df['MESSAGE'][i],
-                'date': dt.datetime.strftime(df['DATE_TIME'][i], "%Y-%m-%d"),
-                'entity': df['ENTITY'][i],
-                'schedule': int(round(df['SCHEDULE'][i])),
-                'drawal': int(round(df['DRAWAL'][i])),
-                'deviation': int(round(df['DEVIATION'][i]))
+                'msgId': df['msgId'][i],
+                'date': dt.datetime.strftime(df['date'][i], "%Y-%m-%d"),
+                'entity': df['entity'][i],
+                'schedule': int(round(df['schedule'][i])),
+                'drawal': int(round(df['drawal'][i])),
+                'deviation': int(round(df['schedule'][i] - df['drawal'][i]))
             }
             violMsgList.append(violMsg)
         return violMsgList

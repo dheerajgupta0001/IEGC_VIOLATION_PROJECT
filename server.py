@@ -2,22 +2,24 @@
 This is the web server that acts as a service that creates raw/derived data of voltage and frequency
 '''
 import datetime as dt
-from src.config.appConfig import getConfig
+from src.config.appConfig import loadAppConfig
 from src.fetchers.significanceViolationFetcher import fetchIegcViolationData, getIegcViolationMsgsFilePath
 from src.repos.insertViolationData import IegcViolationSummaryRepo
 from src.typeDefs.iegcViolationSummary import IViolationMessageSummary
 from src.dataFetcher.iegcViolMsgsFetcher import IegcViolMsgsFetcher
 from flask import Flask, request, jsonify
+from typing import List
 
 app = Flask(__name__)
 
 # get application config
-appConfig = getConfig()
+appConfig = loadAppConfig()
 
 # Set the secret key to some random bytes
 app.secret_key = appConfig['flaskSecret']
 
-appDbConnStr = appConfig['appDbConStr']
+orclDbConnStr = appConfig['orclDbConnStr']
+appDbConnStr = appConfig['appDbConnStr']
 
 
 @app.route('/')
@@ -32,7 +34,7 @@ def createIegcViolationMsgs():
         iegcViolationData = fetchIegcViolationData(reqFile)
 
         # get the instance of IEGC violation repository
-        iegcDataRepo = IegcViolationSummaryRepo(appDbConnStr)
+        iegcDataRepo = IegcViolationSummaryRepo(orclDbConnStr)
         # pushing IEGC violation messages to database
         isInsSuccess = iegcDataRepo.pushViolationMessages(iegcViolationData)
 
@@ -57,7 +59,7 @@ def fetchIegcViolMsgs():
     try:
         # get iegc violation messages
         violMsgsFetcher = IegcViolMsgsFetcher(appDbConnStr)
-        violMsgs: List[IIegcViolMsg] = violMsgsFetcher.fetchIegcViolMsgs(
+        violMsgs = violMsgsFetcher.fetchIegcViolMsgs(
             startDate, endDate)
 
         if violMsgs:

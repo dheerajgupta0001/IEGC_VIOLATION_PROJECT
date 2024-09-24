@@ -1,4 +1,5 @@
 config.xlsx
+config.json
 input_data/
 project_env/
 __pycache__
